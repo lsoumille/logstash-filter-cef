@@ -81,7 +81,9 @@ class LogStash::Filters::CEF < LogStash::Filters::Base
     def filter(event)
         @logger.debug? && @logger.debug('Running CEF filter', event: event)
 
-        source = event[@source]
+        @logger.debug? && @logger.debug('@source equals to ', event: @source)
+        @logger.debug? && @logger.debug('source equals to ', event: event.get(@source))
+        source = event.get(@source)
         return unless source
 
         begin
@@ -93,7 +95,7 @@ class LogStash::Filters::CEF < LogStash::Filters::Base
         end
 
         if @target
-            event[@target] = parsed
+            event.set(@target, parsed)
         else
             unless parsed.is_a?(Hash)
                 @tag_on_failure.each { |tag| event.tag(tag) }
@@ -113,7 +115,7 @@ class LogStash::Filters::CEF < LogStash::Filters::Base
             end
 
             # b) then set all parsed fields in the event
-            parsed.each { |k, v| event[k] = v }
+            parsed.each { |k, v| event.set(k,v) }
             # c) finally re-inject proper @timestamp
             if parsed_timestamp
                 if timestamp
