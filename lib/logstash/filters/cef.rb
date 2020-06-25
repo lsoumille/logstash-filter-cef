@@ -144,7 +144,31 @@ class LogStash::Filters::CEF < LogStash::Filters::Base
         event = {}
 
         # Split by the pipes
-        event['cef_version'], event['cef_vendor'], event['cef_product'], event['cef_device_version'], event['cef_sigid'], event['cef_name'], event['cef_severity'], message = data.split /(?<!\\)[\|]/
+		splitted_data = data.split /(?<!\\)[\|]/
+		if !splitted_data[0].nil?
+			event['cef_version'] = splitted_data[0]
+		end
+		if !splitted_data[1].nil?
+			event['cef_vendor'] = splitted_data[1]
+		end
+		if !splitted_data[2].nil?
+			event['cef_product'] = splitted_data[2]
+		end
+		if !splitted_data[3].nil?
+			event['cef_device_version'] = splitted_data[3]
+		end
+		if !splitted_data[4].nil?
+			event['cef_sigid'] = splitted_data[4]
+		end
+		if !splitted_data[5].nil?
+			event['cef_name'] = splitted_data[5]
+		end
+		if !splitted_data[6].nil?
+			event['cef_severity'] = splitted_data[6]
+		end
+		if !splitted_data[7].nil?
+			message = splitted_data[7..-1].join("|")
+		end
 
         # Try and parse out the syslog header if there is one
         if event['cef_version'].include? ' '
